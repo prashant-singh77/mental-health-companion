@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface Test</title>
+    <link rel="stylesheet" href="chatStyles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .test-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+        }
+        .test-btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-btn:hover {
+            background: #ff5a8a;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h3>Chat Interface Test</h3>
+        <button class="test-btn" onclick="showChat()">Show Chat Interface</button>
+        <button class="test-btn" onclick="hideChat()">Hide Chat Interface</button>
+        <button class="test-btn" onclick="toggleChat()">Toggle Chat Interface</button>
+        <button class="test-btn" onclick="checkStatus()">Check Status</button>
+        <div class="status" id="status">Waiting for action...</div>
+    </div>
+
+    <script src="chatInterface.js"></script>
+    <script>
+        let chatInterface;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Test page loaded');
+
+            try {
+                chatInterface = new ChatInterface();
+                console.log('ChatInterface created successfully:', chatInterface);
+                updateStatus('ChatInterface created successfully');
+                
+                chatInterface.onMessageSend = function(message) {
+                    console.log('Message received:', message);
+                    setTimeout(() => {
+                        chatInterface.addMessage('assistant', 'Test reply: ' + message);
+                    }, 1000);
+                };
+                
+            } catch (error) {
+                console.error('ChatInterface creation failed:', error);
+                updateStatus('ChatInterface creation failed: ' + error.message);
+            }
+        });
+        
+        function showChat() {
+            if (chatInterface) {
+                console.log('Attempting to show chat interface');
+                chatInterface.show();
+                updateStatus('Called show() method, current status: ' + chatInterface.getVisibility());
+            } else {
+                updateStatus('ChatInterface not initialized');
+            }
+        }
+        
+        function hideChat() {
+            if (chatInterface) {
+                console.log('Attempting to hide chat interface');
+                chatInterface.hide();
+                updateStatus('Called hide() method, current status: ' + chatInterface.getVisibility());
+            } else {
+                updateStatus('ChatInterface not initialized');
+            }
+        }
+        
+        function toggleChat() {
+            if (chatInterface) {
+                console.log('Attempting to toggle chat interface');
+                chatInterface.toggle();
+                updateStatus('Called toggle() method, current status: ' + chatInterface.getVisibility());
+            } else {
+                updateStatus('ChatInterface not initialized');
+            }
+        }
+        
+        function checkStatus() {
+            if (chatInterface) {
+                const isVisible = chatInterface.getVisibility();
+                const className = chatInterface.chatContainer.className;
+                const computedStyle = window.getComputedStyle(chatInterface.chatContainer);
+                const opacity = computedStyle.opacity;
+                const transform = computedStyle.transform;
+                const zIndex = computedStyle.zIndex;
+                
+                const statusText = `
+                    Visibility: ${isVisible}
+                    Class name: ${className}
+                    Opacity: ${opacity}
+                    Transform: ${transform}
+                    Z-Index: ${zIndex}
+                `;
+                
+                console.log('Chat interface status:', statusText);
+                updateStatus(statusText);
+            } else {
+                updateStatus('ChatInterface not initialized');
+            }
+        }
+        
+        function updateStatus(text) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = text;
+        }
+    </script>
+</body>
+</html>
